@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "tadaweb-design-system": {
+      "type": "http",
+      "url": "https://design.tadaweb.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${TDW_DESIGN_TOKEN}"
+      }
+    }
+  }
+}

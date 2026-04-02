@@ -1,0 +1,91 @@
+@import url("https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&display=swap");
+
+:root {
+    --fui-font: "Chakra Petch", sans-serif;
+
+    /* Base */
+    --fui-bg: #00111a;
+    --fui-bg-section: #0d1d25;
+    --fui-bg-hover: #192931;
+    --fui-bg-active: #243740;
+    --fui-bg-input: #0a1820;
+
+    /* Primary (Cyan) */
+    --fui-primary-100: #33ffff;
+    --fui-primary-80: #29cfd1;
+    --fui-primary-60: #1fa0a3;
+    --fui-primary-40: #147076;
+    --fui-primary-20: #0a4148;
+    --fui-primary-10: #052931;
+    --fui-primary-5: #031d25;
+
+    /* Secondary (Blue) */
+    --fui-secondary-100: #33bbff;
+
+    /* Feedback */
+    --fui-error-100: #ff3333;
+    --fui-warning-100: #ff8133;
+
+    /* Text */
+    --fui-text: #f5f5f5;
+    --fui-text-dim: #cccfd1;
+    --fui-text-muted: #99a0a3;
+
+    /* Border */
+    --fui-border: #334148;
+    --fui-border-focus: #33ffff;
+
+    /* Glow */
+    --fui-glow-primary: 0 0 8px 0 rgba(51, 255, 255, 0.4);
+    --fui-glow-input: 0 0 12px 0 rgba(51, 255, 255, 0.25);
+
+    /* Spacing */
+    --fui-spacing-1: 4px;
+    --fui-spacing-2: 8px;
+    --fui-spacing-3: 16px;
+    --fui-spacing-4: 24px;
+    --fui-spacing-5: 32px;
+    --fui-spacing-6: 48px;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body,
+#root {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+body {
+    font-family: var(--fui-font);
+    background: var(--fui-bg);
+    color: var(--fui-text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--fui-border);
+    border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--fui-primary-40);
+}

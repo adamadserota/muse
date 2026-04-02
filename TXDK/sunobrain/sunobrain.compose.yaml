@@ -1,0 +1,14 @@
+services:
+  sunobrain:
+    build:
+      context: ./sunobrain
+      dockerfile: Dockerfile
+    ports:
+      - "5205:5205"
+    environment:
+      - VITE_API_URL=http://localhost:8094
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:5205"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
