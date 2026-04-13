@@ -1,39 +1,31 @@
-/** @jsxImportSource @emotion/react */
-import { css } from "@emotion/react";
+import { Box, Typography } from "@mui/material";
 import { CollapsibleCard } from "./CollapsibleCard";
 import { CopyButton } from "./CopyButton";
-
-const contentStyle = css({
-    fontFamily: "var(--fui-font)",
-    fontSize: "14px",
-    lineHeight: 1.7,
-    color: "var(--fui-text-dim)",
-    whiteSpace: "pre-wrap",
-    wordBreak: "break-word",
-    maxHeight: 300,
-    overflow: "auto",
-});
-
-const sectionLabelStyle = css({
-    color: "var(--fui-primary-60)",
-    fontWeight: 600,
-});
 
 interface PlainLyricsOutputProps {
     value: string;
 }
 
-function highlightSections(text: string) {
+const SECTION_LABEL_RE = /^(Verse|Chorus|Pre-Chorus|Post-Chorus|Bridge|Intro|Outro)\s*\d*:/;
+
+function renderWithSectionLabels(text: string) {
     const lines = text.split("\n");
     return lines.map((line, i) => {
-        const isLabel = /^(Verse|Chorus|Pre-Chorus|Post-Chorus|Bridge|Intro|Outro)\s*\d*:/.test(
-            line.trim(),
-        );
+        const isLabel = SECTION_LABEL_RE.test(line.trim());
         return (
-            <span key={i}>
-                {isLabel ? <span css={sectionLabelStyle}>{line}</span> : line}
+            <Box component="span" key={i}>
+                {isLabel ? (
+                    <Box
+                        component="span"
+                        sx={{ color: "primary.main", fontWeight: 600 }}
+                    >
+                        {line}
+                    </Box>
+                ) : (
+                    line
+                )}
                 {i < lines.length - 1 ? "\n" : ""}
-            </span>
+            </Box>
         );
     });
 }
@@ -41,13 +33,23 @@ function highlightSections(text: string) {
 export function PlainLyricsOutput({ value }: PlainLyricsOutputProps) {
     return (
         <CollapsibleCard
-            title="Plain Lyrics"
-            titleColor="var(--fui-text-muted)"
+            title="Plain lyrics"
             headerRight={value ? <CopyButton text={value} /> : undefined}
         >
-            <div css={contentStyle}>
-                {value ? highlightSections(value) : "Plain lyrics will appear here..."}
-            </div>
+            <Typography
+                component="div"
+                variant="body2"
+                color="text.secondary"
+                sx={{
+                    whiteSpace: "pre-wrap",
+                    wordBreak: "break-word",
+                    maxHeight: 300,
+                    overflow: "auto",
+                    lineHeight: 1.7,
+                }}
+            >
+                {value ? renderWithSectionLabels(value) : "Plain lyrics will appear here…"}
+            </Typography>
         </CollapsibleCard>
     );
 }

@@ -1,29 +1,7 @@
-/** @jsxImportSource @emotion/react */
-import { css } from "@emotion/react";
 import { useState, useCallback } from "react";
-
-const buttonStyle = css({
-    background: "transparent",
-    border: "1px solid var(--fui-border)",
-    color: "var(--fui-text-dim)",
-    fontFamily: "var(--fui-font)",
-    fontSize: "12px",
-    padding: "4px 10px",
-    cursor: "pointer",
-    letterSpacing: "0.5px",
-    textTransform: "uppercase",
-    transition: "all 0.15s ease",
-    "&:hover": {
-        borderColor: "var(--fui-primary-100)",
-        color: "var(--fui-primary-100)",
-        boxShadow: "var(--fui-glow-primary)",
-    },
-});
-
-const copiedStyle = css({
-    borderColor: "var(--fui-primary-60)",
-    color: "var(--fui-primary-100)",
-});
+import { Button } from "@mui/material";
+import ContentCopyOutlinedIcon from "@mui/icons-material/ContentCopyOutlined";
+import CheckIcon from "@mui/icons-material/Check";
 
 interface CopyButtonProps {
     text: string;
@@ -33,14 +11,25 @@ export function CopyButton({ text }: CopyButtonProps) {
     const [copied, setCopied] = useState(false);
 
     const handleCopy = useCallback(async () => {
-        await navigator.clipboard.writeText(text);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 1500);
+        try {
+            await navigator.clipboard.writeText(text);
+            setCopied(true);
+            window.setTimeout(() => setCopied(false), 1500);
+        } catch {
+            // clipboard denied
+        }
     }, [text]);
 
     return (
-        <button css={[buttonStyle, copied && copiedStyle]} onClick={handleCopy}>
-            {copied ? "COPIED" : "COPY"}
-        </button>
+        <Button
+            size="small"
+            variant="outlined"
+            onClick={handleCopy}
+            startIcon={copied ? <CheckIcon fontSize="small" /> : <ContentCopyOutlinedIcon fontSize="small" />}
+            color={copied ? "primary" : "inherit"}
+            sx={{ minWidth: 0 }}
+        >
+            {copied ? "Copied" : "Copy"}
+        </Button>
     );
 }

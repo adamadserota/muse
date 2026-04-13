@@ -1,88 +1,50 @@
-/** @jsxImportSource @emotion/react */
-import { css } from "@emotion/react";
 import { useState, type ReactNode } from "react";
-
-const containerStyle = css({
-    border: "1px solid var(--fui-border)",
-    background: "var(--fui-bg-section)",
-});
-
-const headerStyle = css({
-    width: "100%",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "10px var(--fui-spacing-3)",
-    background: "transparent",
-    border: "none",
-    cursor: "pointer",
-    transition: "all 0.15s ease",
-    "&:hover": {
-        background: "var(--fui-bg-hover)",
-    },
-});
-
-const titleStyle = css({
-    fontFamily: "var(--fui-font)",
-    fontSize: "11px",
-    fontWeight: 700,
-    letterSpacing: "1.5px",
-    textTransform: "uppercase",
-});
-
-const rightStyle = css({
-    display: "flex",
-    alignItems: "center",
-    gap: "var(--fui-spacing-2)",
-});
-
-const chevronStyle = css({
-    fontSize: "14px",
-    transition: "transform 0.2s ease",
-    color: "var(--fui-primary-60)",
-});
-
-const bodyStyle = css({
-    padding: "0 var(--fui-spacing-3) var(--fui-spacing-3)",
-});
+import { Accordion, AccordionDetails, AccordionSummary, Box, Typography } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 interface CollapsibleCardProps {
     title: string;
-    titleColor?: string;
     defaultOpen?: boolean;
     headerRight?: ReactNode;
     children: ReactNode;
 }
 
-export function CollapsibleCard({
-    title,
-    titleColor = "var(--fui-primary-100)",
-    defaultOpen = true,
-    headerRight,
-    children,
-}: CollapsibleCardProps) {
-    const [open, setOpen] = useState(defaultOpen);
+/**
+ * Outlined MUI Accordion used by all output sections to keep a consistent look.
+ * (Note: `titleColor` from the legacy API is dropped — colors come from the theme.)
+ */
+export function CollapsibleCard({ title, defaultOpen = true, headerRight, children }: CollapsibleCardProps) {
+    const [expanded, setExpanded] = useState(defaultOpen);
 
     return (
-        <div css={containerStyle}>
-            <div css={headerStyle}>
-                <span
-                    css={[titleStyle, css({ color: titleColor, flex: 1, cursor: "pointer" })]}
-                    onClick={() => setOpen(!open)}
+        <Accordion
+            expanded={expanded}
+            onChange={(_e, v) => setExpanded(v)}
+            disableGutters
+            variant="outlined"
+            sx={{
+                "&:before": { display: "none" },
+                bgcolor: "background.paper",
+            }}
+        >
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography
+                    variant="overline"
+                    color="text.primary"
+                    sx={{ flex: 1, letterSpacing: "0.1em" }}
                 >
                     {title}
-                </span>
-                <div css={rightStyle}>
-                    {open && headerRight}
-                    <span
-                        css={[chevronStyle, css({ cursor: "pointer" }), open && css({ transform: "rotate(180deg)" })]}
-                        onClick={() => setOpen(!open)}
+                </Typography>
+                {headerRight && (
+                    <Box
+                        onClick={(e) => e.stopPropagation()}
+                        sx={{ mr: 1, display: "flex", alignItems: "center", gap: 1 }}
                     >
-                        &#9660;
-                    </span>
-                </div>
-            </div>
-            {open && <div css={bodyStyle}>{children}</div>}
-        </div>
+                        {headerRight}
+                    </Box>
+                )}
+            </AccordionSummary>
+            <AccordionDetails>{children}</AccordionDetails>
+        </Accordion>
     );
 }

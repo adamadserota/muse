@@ -1,4 +1,5 @@
 import { Component, type ReactNode, type ErrorInfo } from "react";
+import { Box, Button, Stack, Typography } from "@mui/material";
 
 interface Props {
     children: ReactNode;
@@ -26,39 +27,35 @@ export class ErrorBoundary extends Component<Props, State> {
     render() {
         if (this.state.hasError) {
             return (
-                <div
-                    style={{
-                        padding: 32,
-                        color: "var(--fui-error-100, #FF3333)",
-                        fontFamily: "var(--fui-font, 'Chakra Petch', sans-serif)",
-                        background: "var(--fui-bg, #00111A)",
+                <Box
+                    sx={{
                         height: "100vh",
                         display: "flex",
-                        flexDirection: "column",
                         alignItems: "center",
                         justifyContent: "center",
-                        gap: 16,
+                        p: 4,
+                        bgcolor: "background.default",
                     }}
                 >
-                    <h2 style={{ color: "var(--fui-text, #F5F5F5)" }}>Something went wrong</h2>
-                    <pre style={{ color: "var(--fui-error-100, #FF3333)", fontSize: 14 }}>
-                        {this.state.error?.message}
-                    </pre>
-                    <button
-                        onClick={() => this.setState({ hasError: false, error: null })}
-                        style={{
-                            background: "transparent",
-                            border: "1px solid var(--fui-primary-100, #33FFFF)",
-                            color: "var(--fui-primary-100, #33FFFF)",
-                            padding: "8px 24px",
-                            fontFamily: "var(--fui-font, 'Chakra Petch', sans-serif)",
-                            cursor: "pointer",
-                        }}
-                        aria-label="Retry after error"
+                    <Stack
+                        spacing={2}
+                        sx={{ alignItems: "center", maxWidth: 420, textAlign: "center" }}
                     >
-                        RETRY
-                    </button>
-                </div>
+                        <Typography variant="h5" color="text.primary">
+                            Something went wrong
+                        </Typography>
+                        <Typography variant="body2" color="error.main">
+                            {this.state.error?.message || "Unknown error"}
+                        </Typography>
+                        <Button
+                            variant="outlined"
+                            onClick={() => this.setState({ hasError: false, error: null })}
+                            aria-label="Retry after error"
+                        >
+                            Retry
+                        </Button>
+                    </Stack>
+                </Box>
             );
         }
         return this.props.children;

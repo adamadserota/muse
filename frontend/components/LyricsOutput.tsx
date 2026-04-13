@@ -1,120 +1,9 @@
-/** @jsxImportSource @emotion/react */
-import { css } from "@emotion/react";
-import { useState, memo } from "react";
+import { memo, useState } from "react";
+import { Box, Button, CircularProgress, Stack, TextField, Typography } from "@mui/material";
+import RefreshIcon from "@mui/icons-material/Refresh";
 import { CollapsibleCard } from "./CollapsibleCard";
 import { CopyButton } from "./CopyButton";
 import { CharCount } from "./CharCount";
-
-const contentStyle = css({
-    fontFamily: "var(--fui-font)",
-    fontSize: "14px",
-    lineHeight: 1.7,
-    color: "var(--fui-text)",
-    whiteSpace: "pre-wrap",
-    wordBreak: "break-word",
-});
-
-const tagStyle = css({
-    color: "var(--fui-secondary-100)",
-    fontWeight: 600,
-});
-
-const footerStyle = css({
-    display: "flex",
-    justifyContent: "flex-start",
-    alignItems: "center",
-    marginTop: "var(--fui-spacing-2)",
-});
-
-const editTextareaStyle = css({
-    width: "100%",
-    minHeight: 300,
-    padding: "var(--fui-spacing-3)",
-    fontFamily: "var(--fui-font)",
-    fontSize: "14px",
-    lineHeight: 1.7,
-    background: "var(--fui-bg-input)",
-    border: "1px solid var(--fui-primary-100)",
-    color: "var(--fui-text)",
-    resize: "vertical",
-    outline: "none",
-    boxShadow: "var(--fui-glow-input)",
-    "&::placeholder": {
-        color: "var(--fui-text-muted)",
-    },
-});
-
-const editActionsStyle = css({
-    display: "flex",
-    gap: "var(--fui-spacing-2)",
-    marginTop: "var(--fui-spacing-2)",
-});
-
-const editBtnStyle = css({
-    padding: "4px 10px",
-    fontFamily: "var(--fui-font)",
-    fontSize: "10px",
-    fontWeight: 600,
-    letterSpacing: "0.5px",
-    textTransform: "uppercase",
-    cursor: "pointer",
-    border: "1px solid var(--fui-border)",
-    background: "transparent",
-    color: "var(--fui-text-muted)",
-    transition: "all 0.15s ease",
-    "&:hover": {
-        borderColor: "var(--fui-primary-100)",
-        color: "var(--fui-primary-100)",
-    },
-});
-
-const saveBtnStyle = css({
-    borderColor: "var(--fui-primary-100)",
-    color: "var(--fui-primary-100)",
-    background: "var(--fui-primary-10)",
-    "&:hover": {
-        background: "var(--fui-primary-20)",
-    },
-});
-
-const regenBtnStyle = css({
-    padding: "4px 10px",
-    fontFamily: "var(--fui-font)",
-    fontSize: "10px",
-    fontWeight: 600,
-    letterSpacing: "0.5px",
-    textTransform: "uppercase",
-    cursor: "pointer",
-    border: "1px solid var(--fui-primary-60)",
-    background: "var(--fui-primary-10)",
-    color: "var(--fui-primary-100)",
-    transition: "all 0.15s ease",
-    "&:hover:not(:disabled)": {
-        background: "var(--fui-primary-20)",
-        boxShadow: "var(--fui-glow-primary)",
-    },
-    "&:disabled": {
-        opacity: 0.4,
-        cursor: "not-allowed",
-    },
-});
-
-const regenLoadingStyle = css({
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: "var(--fui-spacing-3)",
-    fontFamily: "var(--fui-font)",
-    fontSize: "13px",
-    color: "var(--fui-primary-80)",
-    border: "1px solid var(--fui-primary-20)",
-    background: "var(--fui-primary-5)",
-    "@keyframes pulse": {
-        "0%, 100%": { opacity: 0.4 },
-        "50%": { opacity: 1 },
-    },
-    animation: "pulse 1.5s ease-in-out infinite",
-});
 
 interface LyricsOutputProps {
     value: string;
@@ -123,20 +12,29 @@ interface LyricsOutputProps {
     regenerating?: boolean;
 }
 
-function highlightTags(text: string) {
+function renderWithTagHighlights(text: string) {
     const parts = text.split(/(\[.*?\])/g);
     return parts.map((part, i) =>
         part.startsWith("[") && part.endsWith("]") ? (
-            <span key={i} css={tagStyle}>
+            <Box
+                component="span"
+                key={i}
+                sx={{ color: "secondary.main", fontWeight: 600 }}
+            >
                 {part}
-            </span>
+            </Box>
         ) : (
             part
         ),
     );
 }
 
-export const LyricsOutput = memo(function LyricsOutput({ value, onChange, onRegenerate, regenerating }: LyricsOutputProps) {
+export const LyricsOutput = memo(function LyricsOutput({
+    value,
+    onChange,
+    onRegenerate,
+    regenerating,
+}: LyricsOutputProps) {
     const [editing, setEditing] = useState(false);
     const [draft, setDraft] = useState(value);
 
@@ -144,60 +42,83 @@ export const LyricsOutput = memo(function LyricsOutput({ value, onChange, onRege
         setDraft(value);
         setEditing(true);
     };
-
     const handleSave = () => {
         onChange?.(draft);
         setEditing(false);
     };
-
     const handleCancel = () => {
         setDraft(value);
         setEditing(false);
     };
 
     const headerRight = value ? (
-        <div css={css({ display: "flex", alignItems: "center", gap: "var(--fui-spacing-2)" })}>
-            {onRegenerate && !editing && !regenerating && (
-                <button css={regenBtnStyle} onClick={onRegenerate}>{"\u21BB"} Regen</button>
+        <Stack spacing={1} sx={{ flexDirection: "row", alignItems: "center" }}>
+            {onRegenerate && !editing && (
+                <Button
+                    size="small"
+                    disabled={regenerating}
+                    onClick={onRegenerate}
+                    startIcon={
+                        regenerating ? (
+                            <CircularProgress size={14} color="inherit" />
+                        ) : (
+                            <RefreshIcon fontSize="small" />
+                        )
+                    }
+                >
+                    {regenerating ? "…" : "Regen"}
+                </Button>
             )}
             {onChange && !editing && (
-                <button css={editBtnStyle} onClick={handleEdit}>Edit</button>
+                <Button size="small" onClick={handleEdit}>
+                    Edit
+                </Button>
             )}
             <CopyButton text={value} />
-        </div>
+        </Stack>
     ) : undefined;
 
     return (
-        <CollapsibleCard
-            title="Optimized Lyrics"
-            titleColor="var(--fui-primary-100)"
-            headerRight={headerRight}
-        >
-            {regenerating && (
-                <div css={regenLoadingStyle}>Regenerating lyrics...</div>
-            )}
+        <CollapsibleCard title="Optimized lyrics" headerRight={headerRight}>
             {editing ? (
-                <>
-                    <textarea
-                        css={editTextareaStyle}
+                <Box>
+                    <TextField
                         value={draft}
                         onChange={(e) => setDraft(e.target.value)}
+                        multiline
+                        minRows={10}
+                        maxRows={30}
+                        fullWidth
                         autoFocus
+                        size="small"
                     />
-                    <div css={editActionsStyle}>
-                        <button css={[editBtnStyle, saveBtnStyle]} onClick={handleSave}>Save</button>
-                        <button css={editBtnStyle} onClick={handleCancel}>Cancel</button>
-                    </div>
-                </>
+                    <Stack spacing={1} sx={{ flexDirection: "row", mt: 1, justifyContent: "flex-end" }}>
+                        <Button size="small" onClick={handleCancel}>
+                            Cancel
+                        </Button>
+                        <Button size="small" variant="contained" onClick={handleSave}>
+                            Save
+                        </Button>
+                    </Stack>
+                </Box>
             ) : (
-                <div css={contentStyle}>
-                    {value ? highlightTags(value) : "Optimized lyrics will appear here..."}
-                </div>
+                <Typography
+                    component="div"
+                    variant="body2"
+                    color="text.primary"
+                    sx={{
+                        whiteSpace: "pre-wrap",
+                        wordBreak: "break-word",
+                        lineHeight: 1.75,
+                    }}
+                >
+                    {value ? renderWithTagHighlights(value) : "Optimized lyrics will appear here…"}
+                </Typography>
             )}
             {value && !editing && (
-                <div css={footerStyle}>
+                <Box sx={{ mt: 1 }}>
                     <CharCount current={value.length} max={5000} />
-                </div>
+                </Box>
             )}
         </CollapsibleCard>
     );

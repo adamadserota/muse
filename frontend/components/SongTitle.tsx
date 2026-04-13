@@ -1,65 +1,7 @@
-/** @jsxImportSource @emotion/react */
-import { css } from "@emotion/react";
 import { useState } from "react";
+import { Box, Button, Stack, TextField, Typography } from "@mui/material";
 import { CollapsibleCard } from "./CollapsibleCard";
 import { CopyButton } from "./CopyButton";
-
-const titleTextStyle = css({
-    fontFamily: "var(--fui-font)",
-    fontSize: "22px",
-    fontWeight: 700,
-    letterSpacing: "2px",
-    textTransform: "uppercase",
-    color: "var(--fui-primary-100)",
-});
-
-const editInputStyle = css({
-    width: "100%",
-    padding: "8px 10px",
-    fontFamily: "var(--fui-font)",
-    fontSize: "20px",
-    fontWeight: 700,
-    letterSpacing: "2px",
-    textTransform: "uppercase",
-    background: "var(--fui-bg-input)",
-    border: "1px solid var(--fui-primary-100)",
-    color: "var(--fui-primary-100)",
-    outline: "none",
-    boxShadow: "var(--fui-glow-input)",
-});
-
-const editActionsStyle = css({
-    display: "flex",
-    gap: "var(--fui-spacing-2)",
-    marginTop: "var(--fui-spacing-2)",
-});
-
-const editBtnStyle = css({
-    padding: "4px 10px",
-    fontFamily: "var(--fui-font)",
-    fontSize: "10px",
-    fontWeight: 600,
-    letterSpacing: "0.5px",
-    textTransform: "uppercase",
-    cursor: "pointer",
-    border: "1px solid var(--fui-border)",
-    background: "transparent",
-    color: "var(--fui-text-muted)",
-    transition: "all 0.15s ease",
-    "&:hover": {
-        borderColor: "var(--fui-primary-100)",
-        color: "var(--fui-primary-100)",
-    },
-});
-
-const saveBtnStyle = css({
-    borderColor: "var(--fui-primary-100)",
-    color: "var(--fui-primary-100)",
-    background: "var(--fui-primary-10)",
-    "&:hover": {
-        background: "var(--fui-primary-20)",
-    },
-});
 
 interface SongTitleProps {
     value: string;
@@ -76,39 +18,32 @@ export function SongTitle({ value, onChange }: SongTitleProps) {
         setDraft(value);
         setEditing(true);
     };
-
     const handleSave = () => {
         const trimmed = draft.trim();
-        if (trimmed && onChange) {
-            onChange(trimmed);
-        }
+        if (trimmed && onChange) onChange(trimmed);
         setEditing(false);
     };
-
     const handleCancel = () => {
         setDraft(value);
         setEditing(false);
     };
 
     const headerRight = (
-        <div css={css({ display: "flex", alignItems: "center", gap: "var(--fui-spacing-2)" })}>
+        <Stack spacing={1} sx={{ flexDirection: "row", alignItems: "center" }}>
             {onChange && !editing && (
-                <button css={editBtnStyle} onClick={handleEdit}>Edit</button>
+                <Button size="small" onClick={handleEdit}>
+                    Edit
+                </Button>
             )}
             <CopyButton text={value} />
-        </div>
+        </Stack>
     );
 
     return (
-        <CollapsibleCard
-            title="Song Title"
-            titleColor="var(--fui-primary-100)"
-            headerRight={headerRight}
-        >
+        <CollapsibleCard title="Song title" headerRight={headerRight}>
             {editing ? (
-                <>
-                    <input
-                        css={editInputStyle}
+                <Box>
+                    <TextField
                         value={draft}
                         onChange={(e) => setDraft(e.target.value)}
                         onKeyDown={(e) => {
@@ -116,14 +51,29 @@ export function SongTitle({ value, onChange }: SongTitleProps) {
                             if (e.key === "Escape") handleCancel();
                         }}
                         autoFocus
+                        fullWidth
+                        size="small"
                     />
-                    <div css={editActionsStyle}>
-                        <button css={[editBtnStyle, saveBtnStyle]} onClick={handleSave}>Save</button>
-                        <button css={editBtnStyle} onClick={handleCancel}>Cancel</button>
-                    </div>
-                </>
+                    <Stack
+                        spacing={1}
+                        sx={{ flexDirection: "row", mt: 1, justifyContent: "flex-end" }}
+                    >
+                        <Button size="small" onClick={handleCancel}>
+                            Cancel
+                        </Button>
+                        <Button size="small" variant="contained" onClick={handleSave}>
+                            Save
+                        </Button>
+                    </Stack>
+                </Box>
             ) : (
-                <span css={titleTextStyle}>{value}</span>
+                <Typography
+                    variant="h5"
+                    color="primary.main"
+                    sx={{ fontWeight: 600, letterSpacing: "0.04em" }}
+                >
+                    {value}
+                </Typography>
             )}
         </CollapsibleCard>
     );

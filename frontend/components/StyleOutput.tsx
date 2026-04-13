@@ -1,212 +1,11 @@
-/** @jsxImportSource @emotion/react */
-import { css } from "@emotion/react";
-import { useState, memo } from "react";
+import { memo, useState } from "react";
+import { Alert, Box, Button, CircularProgress, Stack, TextField, Typography } from "@mui/material";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import BookmarkAddOutlinedIcon from "@mui/icons-material/BookmarkAddOutlined";
 import { CollapsibleCard } from "./CollapsibleCard";
 import { CopyButton } from "./CopyButton";
 import { CharCount } from "./CharCount";
 import type { SaveStyleParams } from "../hooks/useSavedStyles";
-
-const contentStyle = css({
-    fontFamily: "var(--fui-font)",
-    fontSize: "14px",
-    lineHeight: 1.6,
-    color: "var(--fui-text)",
-    whiteSpace: "pre-wrap",
-    wordBreak: "break-word",
-});
-
-const footerStyle = css({
-    display: "flex",
-    justifyContent: "flex-start",
-    alignItems: "center",
-    marginTop: "var(--fui-spacing-2)",
-});
-
-const headerActionsStyle = css({
-    display: "flex",
-    alignItems: "center",
-    gap: "var(--fui-spacing-2)",
-});
-
-const saveButtonStyle = css({
-    padding: "4px 10px",
-    fontFamily: "var(--fui-font)",
-    fontSize: "10px",
-    fontWeight: 600,
-    letterSpacing: "0.5px",
-    textTransform: "uppercase",
-    cursor: "pointer",
-    border: "1px solid var(--fui-secondary-100)",
-    background: "transparent",
-    color: "var(--fui-secondary-100)",
-    transition: "all 0.15s ease",
-    "&:hover": {
-        background: "rgba(51, 187, 255, 0.1)",
-    },
-});
-
-const saveInputStyle = css({
-    display: "flex",
-    flexDirection: "column",
-    gap: "var(--fui-spacing-2)",
-    padding: "var(--fui-spacing-2)",
-    border: "1px solid var(--fui-secondary-100)",
-    background: "var(--fui-bg-input)",
-    marginBottom: "var(--fui-spacing-2)",
-});
-
-const saveRowStyle = css({
-    display: "flex",
-    alignItems: "center",
-    gap: "var(--fui-spacing-2)",
-});
-
-const nameInputStyle = css({
-    flex: 1,
-    padding: "6px 10px",
-    fontFamily: "var(--fui-font)",
-    fontSize: "12px",
-    background: "transparent",
-    border: "1px solid var(--fui-border)",
-    color: "var(--fui-text)",
-    outline: "none",
-    "&:focus": {
-        borderColor: "var(--fui-secondary-100)",
-    },
-    "&::placeholder": {
-        color: "var(--fui-text-muted)",
-    },
-});
-
-const confirmButtonStyle = css({
-    padding: "6px 12px",
-    fontFamily: "var(--fui-font)",
-    fontSize: "10px",
-    fontWeight: 600,
-    letterSpacing: "0.5px",
-    textTransform: "uppercase",
-    cursor: "pointer",
-    border: "1px solid var(--fui-secondary-100)",
-    background: "rgba(51, 187, 255, 0.15)",
-    color: "var(--fui-secondary-100)",
-    "&:hover": {
-        background: "rgba(51, 187, 255, 0.25)",
-    },
-    "&:disabled": {
-        opacity: 0.4,
-        cursor: "not-allowed",
-    },
-});
-
-const cancelButtonStyle = css({
-    padding: "6px 12px",
-    fontFamily: "var(--fui-font)",
-    fontSize: "10px",
-    fontWeight: 600,
-    letterSpacing: "0.5px",
-    textTransform: "uppercase",
-    cursor: "pointer",
-    border: "1px solid var(--fui-border)",
-    background: "transparent",
-    color: "var(--fui-text-muted)",
-    "&:hover": {
-        borderColor: "var(--fui-text)",
-        color: "var(--fui-text)",
-    },
-});
-
-const validationErrorStyle = css({
-    fontFamily: "var(--fui-font)",
-    fontSize: "11px",
-    color: "var(--fui-error-100)",
-});
-
-const editTextareaStyle = css({
-    width: "100%",
-    minHeight: 120,
-    padding: "var(--fui-spacing-3)",
-    fontFamily: "var(--fui-font)",
-    fontSize: "14px",
-    lineHeight: 1.6,
-    background: "var(--fui-bg-input)",
-    border: "1px solid var(--fui-primary-100)",
-    color: "var(--fui-text)",
-    resize: "vertical",
-    outline: "none",
-    boxShadow: "var(--fui-glow-input)",
-});
-
-const editActionsStyle = css({
-    display: "flex",
-    gap: "var(--fui-spacing-2)",
-    marginTop: "var(--fui-spacing-2)",
-});
-
-const editBtnStyle = css({
-    padding: "4px 10px",
-    fontFamily: "var(--fui-font)",
-    fontSize: "10px",
-    fontWeight: 600,
-    letterSpacing: "0.5px",
-    textTransform: "uppercase",
-    cursor: "pointer",
-    border: "1px solid var(--fui-border)",
-    background: "transparent",
-    color: "var(--fui-text-muted)",
-    transition: "all 0.15s ease",
-    "&:hover": {
-        borderColor: "var(--fui-primary-100)",
-        color: "var(--fui-primary-100)",
-    },
-});
-
-const editSaveBtnStyle = css({
-    borderColor: "var(--fui-primary-100)",
-    color: "var(--fui-primary-100)",
-    background: "var(--fui-primary-10)",
-    "&:hover": {
-        background: "var(--fui-primary-20)",
-    },
-});
-
-const regenBtnStyle = css({
-    padding: "4px 10px",
-    fontFamily: "var(--fui-font)",
-    fontSize: "10px",
-    fontWeight: 600,
-    letterSpacing: "0.5px",
-    textTransform: "uppercase",
-    cursor: "pointer",
-    border: "1px solid var(--fui-primary-60)",
-    background: "var(--fui-primary-10)",
-    color: "var(--fui-primary-100)",
-    transition: "all 0.15s ease",
-    "&:hover:not(:disabled)": {
-        background: "var(--fui-primary-20)",
-        boxShadow: "var(--fui-glow-primary)",
-    },
-    "&:disabled": {
-        opacity: 0.4,
-        cursor: "not-allowed",
-    },
-});
-
-const regenLoadingStyle = css({
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: "var(--fui-spacing-3)",
-    fontFamily: "var(--fui-font)",
-    fontSize: "13px",
-    color: "var(--fui-primary-80)",
-    border: "1px solid var(--fui-primary-20)",
-    background: "var(--fui-primary-5)",
-    "@keyframes pulse": {
-        "0%, 100%": { opacity: 0.4 },
-        "50%": { opacity: 1 },
-    },
-    animation: "pulse 1.5s ease-in-out infinite",
-});
 
 interface StyleOutputProps {
     value: string;
@@ -218,7 +17,15 @@ interface StyleOutputProps {
     regenerating?: boolean;
 }
 
-export const StyleOutput = memo(function StyleOutput({ value, excludeStyles, genres, onChange, onSaveStyle, onRegenerate, regenerating }: StyleOutputProps) {
+export const StyleOutput = memo(function StyleOutput({
+    value,
+    excludeStyles,
+    genres,
+    onChange,
+    onSaveStyle,
+    onRegenerate,
+    regenerating,
+}: StyleOutputProps) {
     const [saving, setSaving] = useState(false);
     const [styleName, setStyleName] = useState("");
     const [validationError, setValidationError] = useState<string | null>(null);
@@ -241,60 +48,68 @@ export const StyleOutput = memo(function StyleOutput({ value, excludeStyles, gen
         setStyleName("");
         setValidationError(null);
     };
-
     const handleCancelSave = () => {
         setSaving(false);
         setStyleName("");
         setValidationError(null);
     };
-
     const handleEdit = () => {
         setEditDraft(value);
         setEditing(true);
     };
-
     const handleEditSave = () => {
         onChange?.(editDraft);
         setEditing(false);
     };
-
     const handleEditCancel = () => {
         setEditDraft(value);
         setEditing(false);
     };
 
     const headerRight = value ? (
-        <div css={headerActionsStyle}>
-            {onRegenerate && !editing && !regenerating && (
-                <button css={regenBtnStyle} onClick={onRegenerate}>{"\u21BB"} Regen</button>
+        <Stack spacing={1} sx={{ flexDirection: "row", alignItems: "center" }}>
+            {onRegenerate && !editing && (
+                <Button
+                    size="small"
+                    disabled={regenerating}
+                    onClick={onRegenerate}
+                    startIcon={
+                        regenerating ? (
+                            <CircularProgress size={14} color="inherit" />
+                        ) : (
+                            <RefreshIcon fontSize="small" />
+                        )
+                    }
+                >
+                    {regenerating ? "…" : "Regen"}
+                </Button>
             )}
-            {onSaveStyle && !editing && (
-                <button css={saveButtonStyle} onClick={() => setSaving(true)}>
+            {onSaveStyle && !editing && !saving && (
+                <Button
+                    size="small"
+                    color="secondary"
+                    onClick={() => setSaving(true)}
+                    startIcon={<BookmarkAddOutlinedIcon fontSize="small" />}
+                >
                     Save
-                </button>
+                </Button>
             )}
             {onChange && !editing && (
-                <button css={editBtnStyle} onClick={handleEdit}>Edit</button>
+                <Button size="small" onClick={handleEdit}>
+                    Edit
+                </Button>
             )}
             <CopyButton text={value} />
-        </div>
+        </Stack>
     ) : undefined;
 
     return (
-        <CollapsibleCard
-            title="Style Prompt"
-            titleColor="var(--fui-primary-100)"
-            headerRight={headerRight}
-        >
-            {regenerating && (
-                <div css={regenLoadingStyle}>Regenerating styles...</div>
-            )}
+        <CollapsibleCard title="Style prompt" headerRight={headerRight}>
             {saving && !editing && (
-                <div css={saveInputStyle}>
-                    <div css={saveRowStyle}>
-                        <input
-                            css={nameInputStyle}
-                            placeholder="Style name (must be unique)..."
+                <Stack spacing={1} sx={{ mb: 2 }}>
+                    <Stack spacing={1} sx={{ flexDirection: "row", alignItems: "center" }}>
+                        <TextField
+                            placeholder="Style name (must be unique)…"
                             value={styleName}
                             onChange={(e) => {
                                 setStyleName(e.target.value);
@@ -302,45 +117,68 @@ export const StyleOutput = memo(function StyleOutput({ value, excludeStyles, gen
                             }}
                             onKeyDown={(e) => e.key === "Enter" && handleSaveToLibrary()}
                             autoFocus
+                            fullWidth
+                            size="small"
                         />
-                        <button
-                            css={confirmButtonStyle}
+                        <Button
+                            size="small"
+                            variant="contained"
+                            color="secondary"
                             onClick={handleSaveToLibrary}
                             disabled={!styleName.trim()}
                         >
                             Save
-                        </button>
-                        <button css={cancelButtonStyle} onClick={handleCancelSave}>
+                        </Button>
+                        <Button size="small" onClick={handleCancelSave}>
                             Cancel
-                        </button>
-                    </div>
+                        </Button>
+                    </Stack>
                     {validationError && (
-                        <span css={validationErrorStyle}>{validationError}</span>
+                        <Alert severity="error" variant="outlined">
+                            {validationError}
+                        </Alert>
                     )}
-                </div>
+                </Stack>
             )}
+
             {editing ? (
-                <>
-                    <textarea
-                        css={editTextareaStyle}
+                <Box>
+                    <TextField
                         value={editDraft}
                         onChange={(e) => setEditDraft(e.target.value)}
+                        multiline
+                        minRows={5}
+                        fullWidth
                         autoFocus
+                        size="small"
                     />
-                    <div css={editActionsStyle}>
-                        <button css={[editBtnStyle, editSaveBtnStyle]} onClick={handleEditSave}>Save</button>
-                        <button css={editBtnStyle} onClick={handleEditCancel}>Cancel</button>
-                    </div>
-                </>
+                    <Stack spacing={1} sx={{ flexDirection: "row", mt: 1, justifyContent: "flex-end" }}>
+                        <Button size="small" onClick={handleEditCancel}>
+                            Cancel
+                        </Button>
+                        <Button size="small" variant="contained" onClick={handleEditSave}>
+                            Save
+                        </Button>
+                    </Stack>
+                </Box>
             ) : (
-                <div css={contentStyle}>
-                    {value || "Generate a song to see the style prompt..."}
-                </div>
+                <Typography
+                    variant="body2"
+                    color="text.primary"
+                    sx={{
+                        whiteSpace: "pre-wrap",
+                        wordBreak: "break-word",
+                        lineHeight: 1.6,
+                    }}
+                >
+                    {value || "Generate a song to see the style prompt…"}
+                </Typography>
             )}
+
             {value && !editing && (
-                <div css={footerStyle}>
+                <Box sx={{ mt: 1 }}>
                     <CharCount current={value.length} max={1000} />
-                </div>
+                </Box>
             )}
         </CollapsibleCard>
     );

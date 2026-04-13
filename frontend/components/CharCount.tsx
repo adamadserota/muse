@@ -1,15 +1,4 @@
-/** @jsxImportSource @emotion/react */
-import { css } from "@emotion/react";
-
-const baseStyle = css({
-    fontFamily: "var(--fui-font)",
-    fontSize: "11px",
-    letterSpacing: "0.5px",
-});
-
-const normalStyle = css({ color: "var(--fui-text-muted)" });
-const warningStyle = css({ color: "var(--fui-warning-100)" });
-const errorStyle = css({ color: "var(--fui-error-100)" });
+import { Typography } from "@mui/material";
 
 interface CharCountProps {
     current: number;
@@ -18,11 +7,11 @@ interface CharCountProps {
 
 export function CharCount({ current, max }: CharCountProps) {
     const ratio = current / max;
-    const colorStyle = ratio > 1 ? errorStyle : ratio > 0.9 ? warningStyle : normalStyle;
+    const color = ratio > 1 ? "error.main" : ratio > 0.9 ? "warning.main" : "text.secondary";
 
     return (
-        <span css={[baseStyle, colorStyle]}>
+        <Typography variant="caption" sx={{ color }}>
             {current.toLocaleString()} / {max.toLocaleString()}
-        </span>
+        </Typography>
     );
 }

@@ -1,97 +1,11 @@
-/** @jsxImportSource @emotion/react */
-import { css } from "@emotion/react";
 import { useState, useCallback } from "react";
+import { Alert, Box, Button, CircularProgress, Stack, Typography } from "@mui/material";
+import ImageOutlinedIcon from "@mui/icons-material/ImageOutlined";
+import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
+import RefreshIcon from "@mui/icons-material/Refresh";
 import { CollapsibleCard } from "./CollapsibleCard";
 import { generateAlbumCover } from "../services/apiClient";
 import { compositeAlbumCover } from "../services/coverCompositor";
-
-const generateButtonStyle = css({
-    padding: "8px 16px",
-    fontFamily: "var(--fui-font)",
-    fontSize: "11px",
-    fontWeight: 700,
-    letterSpacing: "1px",
-    textTransform: "uppercase",
-    cursor: "pointer",
-    border: "1px solid var(--fui-primary-60)",
-    background: "var(--fui-primary-10)",
-    color: "var(--fui-primary-100)",
-    transition: "all 0.15s ease",
-    "&:hover:not(:disabled)": {
-        background: "var(--fui-primary-20)",
-        boxShadow: "var(--fui-glow-primary)",
-    },
-    "&:disabled": {
-        opacity: 0.4,
-        cursor: "not-allowed",
-    },
-});
-
-const imageContainerStyle = css({
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-});
-
-const imageStyle = css({
-    maxWidth: "100%",
-    maxHeight: 500,
-    border: "1px solid var(--fui-border)",
-});
-
-const loadingStyle = css({
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: "var(--fui-spacing-5)",
-    fontFamily: "var(--fui-font)",
-    fontSize: "13px",
-    color: "var(--fui-primary-80)",
-    border: "1px solid var(--fui-primary-20)",
-    background: "var(--fui-primary-5)",
-    "@keyframes pulse": {
-        "0%, 100%": { opacity: 0.4 },
-        "50%": { opacity: 1 },
-    },
-    animation: "pulse 1.5s ease-in-out infinite",
-});
-
-const errorStyle = css({
-    fontFamily: "var(--fui-font)",
-    fontSize: "13px",
-    color: "var(--fui-error-100)",
-    padding: "var(--fui-spacing-2) var(--fui-spacing-3)",
-    border: "1px solid var(--fui-error-100)",
-    background: "rgba(255, 51, 51, 0.08)",
-});
-
-const actionsStyle = css({
-    display: "flex",
-    gap: "var(--fui-spacing-2)",
-    marginTop: "var(--fui-spacing-2)",
-});
-
-const actionButtonStyle = css({
-    padding: "8px 16px",
-    fontFamily: "var(--fui-font)",
-    fontSize: "12px",
-    fontWeight: 600,
-    letterSpacing: "0.5px",
-    textTransform: "uppercase",
-    cursor: "pointer",
-    border: "1px solid var(--fui-border)",
-    background: "transparent",
-    color: "var(--fui-text-dim)",
-    transition: "all 0.15s ease",
-    "&:hover:not(:disabled)": {
-        borderColor: "var(--fui-primary-100)",
-        color: "var(--fui-primary-100)",
-    },
-    "&:disabled": {
-        opacity: 0.4,
-        cursor: "not-allowed",
-    },
-});
 
 interface AlbumCoverProps {
     plainLyrics: string;
@@ -110,19 +24,13 @@ export function AlbumCover({ plainLyrics, songTitle, styles }: AlbumCoverProps) 
         setError(null);
         setStep("generating");
         try {
-            const res = await generateAlbumCover({
-                plainLyrics,
-                songTitle,
-                styles,
-            });
-
+            const res = await generateAlbumCover({ plainLyrics, songTitle, styles });
             setStep("compositing");
             const dataUrl = await compositeAlbumCover({
                 artworkBase64: res.image_base64,
                 mimeType: res.mime_type,
                 songTitle,
             });
-
             setCompositeDataUrl(dataUrl);
             setStep("idle");
         } catch (e) {
@@ -138,61 +46,93 @@ export function AlbumCover({ plainLyrics, songTitle, styles }: AlbumCoverProps) 
         const link = document.createElement("a");
         link.href = compositeDataUrl;
         const safeName = songTitle.replace(/[^a-zA-Z0-9]/g, "_").toLowerCase();
-        link.download = `adrift_beats_${safeName}.png`;
+        link.download = `muse_${safeName || "song"}.png`;
         link.click();
     }, [compositeDataUrl, songTitle]);
 
-    const headerButton =
+    const headerRight =
         !compositeDataUrl && !loading ? (
-            <button
-                css={generateButtonStyle}
+            <Button
+                size="small"
+                variant="outlined"
+                startIcon={<ImageOutlinedIcon fontSize="small" />}
                 onClick={(e) => {
                     e.stopPropagation();
                     handleGenerate();
                 }}
             >
-                Generate Cover
-            </button>
+                Generate cover
+            </Button>
         ) : undefined;
 
     return (
-        <CollapsibleCard
-            title="Album Cover — ADRIFT BEATS"
-            titleColor="var(--fui-primary-100)"
-            headerRight={headerButton}
-        >
+        <CollapsibleCard title="Album cover" headerRight={headerRight}>
             {loading && (
-                <div css={loadingStyle}>
-                    {step === "generating"
-                        ? "Generating artwork with Imagen 4 Ultra..."
-                        : "Compositing typography overlay..."}
-                </div>
+                <Stack
+                    spacing={1}
+                    sx={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        p: 3,
+                    }}
+                >
+                    <CircularProgress size={20} />
+                    <Typography variant="body2" color="text.secondary">
+                        {step === "generating"
+                            ? "Generating artwork with Imagen…"
+                            : "Compositing typography overlay…"}
+                    </Typography>
+                </Stack>
             )}
 
-            {error && <div css={errorStyle}>{error}</div>}
+            {error && (
+                <Alert severity="error" sx={{ mb: 1 }}>
+                    {error}
+                </Alert>
+            )}
 
             {compositeDataUrl && (
-                <>
-                    <div css={imageContainerStyle}>
-                        <img
-                            css={imageStyle}
+                <Stack spacing={1}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                        }}
+                    >
+                        <Box
+                            component="img"
                             src={compositeDataUrl}
                             alt={`Album cover for ${songTitle}`}
+                            sx={{
+                                maxWidth: "100%",
+                                maxHeight: 500,
+                                border: 1,
+                                borderColor: "divider",
+                                borderRadius: 1,
+                            }}
                         />
-                    </div>
-                    <div css={actionsStyle}>
-                        <button css={actionButtonStyle} onClick={handleDownload}>
-                            Download PNG
-                        </button>
-                        <button
-                            css={actionButtonStyle}
-                            onClick={handleGenerate}
+                    </Box>
+                    <Stack spacing={1} sx={{ flexDirection: "row", justifyContent: "flex-end" }}>
+                        <Button
+                            size="small"
                             disabled={loading}
+                            startIcon={<RefreshIcon fontSize="small" />}
+                            onClick={handleGenerate}
                         >
                             Regenerate
-                        </button>
-                    </div>
-                </>
+                        </Button>
+                        <Button
+                            size="small"
+                            variant="contained"
+                            startIcon={<DownloadOutlinedIcon fontSize="small" />}
+                            onClick={handleDownload}
+                        >
+                            Download PNG
+                        </Button>
+                    </Stack>
+                </Stack>
             )}
         </CollapsibleCard>
     );

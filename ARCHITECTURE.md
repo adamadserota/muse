@@ -133,7 +133,7 @@ Material Design 3 via `@mui/material@^9`. Theme factory is in `frontend/theme/th
 - Shape: `borderRadius: 12` (M3 medium).
 - Light + dark surface/on-surface colors, all other tokens derived by MUI from primary.
 
-A transitional `--fui-*` CSS-variable compatibility layer lives in `index.css` so legacy components (the output section subtree — LyricsOutput, StyleOutput, AlbumCover, etc.) render with sensible dark-mode colors until they're migrated to MUI theme tokens. Remove once fully migrated.
+Every component uses MUI theme tokens and the `sx` prop. There are no design tokens in `index.css` — only a reset + scrollbar styling. The legacy `--fui-*` compatibility layer was removed once all output components were migrated.
 
 ## Build & deploy
 
