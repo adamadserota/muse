@@ -13,7 +13,7 @@ A songwriting companion that makes [Suno AI](https://suno.com) match what's actu
 ## Quick start
 
 ```bash
-git clone https://github.com/aserota/muse.git
+git clone https://github.com/adamadserota/muse.git
 cd muse
 
 # Frontend
