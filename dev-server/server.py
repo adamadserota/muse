@@ -132,8 +132,37 @@ def _handle_llm_error(e: Exception, api_key: str) -> HTTPException:
     """Map a Gemini exception to an HTTPException with a user-friendly message."""
     error_msg = _sanitize_error(str(e), api_key)
     lowered = error_msg.lower()
-    if "api key" in lowered or "401" in error_msg or "403" in error_msg:
+
+    # Auth failure — must be a specific signal, not just the phrase "api key" appearing somewhere.
+    if (
+        "api_key_invalid" in lowered
+        or "api key not valid" in lowered
+        or "invalid api key" in lowered
+        or "unauthenticated" in lowered
+        or "invalid authentication" in lowered
+    ):
         return HTTPException(status_code=401, detail="Invalid Gemini API key")
+
+    # Permission denied — the key works but can't access this model/feature.
+    if "permission_denied" in lowered or "permission denied" in lowered or "not authorized" in lowered:
+        logger.error(f"Gemini permission error: {error_msg}", exc_info=True)
+        return HTTPException(
+            status_code=403,
+            detail=(
+                "Your Gemini API key doesn't have access to this model. "
+                "Preview models (e.g. Gemini 3.1 Pro) may require allow-listed access — "
+                "try switching models in Settings. Details: " + error_msg
+            ),
+        )
+
+    # Model not found / unsupported.
+    if "not_found" in lowered or "is not found for api version" in lowered or "not supported for" in lowered:
+        logger.error(f"Gemini model error: {error_msg}", exc_info=True)
+        return HTTPException(
+            status_code=404,
+            detail=f"Model unavailable for this API key. Try switching models in Settings. Details: {error_msg}",
+        )
+
     if "429" in error_msg or "resource_exhausted" in lowered or "quota" in lowered or "rate limit" in lowered:
         return HTTPException(
             status_code=429,

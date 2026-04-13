@@ -91,8 +91,27 @@ class handler(BaseHTTPRequestHandler):
         except Exception as e:
             error_msg = _sanitize_error(str(e), api_key)
             lowered = error_msg.lower()
-            if "api key" in lowered or "401" in error_msg or "403" in error_msg:
+            if (
+                "api_key_invalid" in lowered
+                or "api key not valid" in lowered
+                or "invalid api key" in lowered
+                or "unauthenticated" in lowered
+                or "invalid authentication" in lowered
+            ):
                 self._error(401, "Invalid Gemini API key")
+                return
+            if "permission_denied" in lowered or "permission denied" in lowered or "not authorized" in lowered:
+                self._error(
+                    403,
+                    "Your Gemini API key doesn't have access to Imagen. "
+                    "Image generation requires a paid tier on Google AI Studio. Details: " + error_msg,
+                )
+                return
+            if "not_found" in lowered or "is not found for api version" in lowered or "not supported for" in lowered:
+                self._error(
+                    404,
+                    f"Imagen model unavailable for this API key. Details: {error_msg}",
+                )
                 return
             if "429" in error_msg or "resource_exhausted" in lowered or "quota" in lowered:
                 self._error(429, "Gemini API quota exceeded — check your plan and billing")
