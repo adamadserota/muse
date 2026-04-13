@@ -1,0 +1,85 @@
+/*
+ * Minimal global styles.
+ *
+ * The --fui-* variables below are a temporary compatibility layer for components
+ * not yet migrated to MUI. They are resolved to dark-theme values regardless of
+ * the active theme mode. As each component is migrated to MUI theme tokens, its
+ * references to these vars go away; when all are migrated, delete this block.
+ */
+
+:root {
+    --fui-font: "Roboto Flex Variable", "Roboto Flex", system-ui, sans-serif;
+
+    /* Backgrounds (dark-theme aligned) */
+    --fui-bg: #0E1415;
+    --fui-bg-section: #171D1E;
+    --fui-bg-hover: #1E2526;
+    --fui-bg-active: #242B2C;
+    --fui-bg-input: #0A1012;
+
+    /* Primary (M3 cyan/teal) */
+    --fui-primary-100: #52D7DE;
+    --fui-primary-80: #42AFB5;
+    --fui-primary-60: #33888D;
+    --fui-primary-40: #236064;
+    --fui-primary-20: rgba(82, 215, 222, 0.2);
+    --fui-primary-10: rgba(82, 215, 222, 0.1);
+    --fui-primary-5: rgba(82, 215, 222, 0.05);
+
+    /* Text */
+    --fui-text: #DDE4E5;
+    --fui-text-dim: #BEC8CA;
+    --fui-text-muted: #99A0A3;
+
+    /* Borders & feedback */
+    --fui-border: #3F484A;
+    --fui-error-100: #FFB4AB;
+    --fui-warning-100: #FFB95C;
+
+    /* Glow */
+    --fui-glow-primary: 0 0 8px 0 rgba(82, 215, 222, 0.4);
+    --fui-glow-input: 0 0 12px 0 rgba(82, 215, 222, 0.25);
+
+    /* Spacing */
+    --fui-spacing-1: 4px;
+    --fui-spacing-2: 8px;
+    --fui-spacing-3: 16px;
+    --fui-spacing-4: 24px;
+    --fui-spacing-5: 32px;
+    --fui-spacing-6: 48px;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(127, 127, 127, 0.3);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(127, 127, 127, 0.5);
+}
