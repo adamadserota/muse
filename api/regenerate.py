@@ -76,7 +76,7 @@ class handler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_POST(self):
-        api_key = (self.headers.get("X-Gemini-API-Key") or "").strip()
+        api_key = (self.headers.get("X-Gemini-API-Key") or "").strip().strip('"').strip("'").strip()
         if not api_key:
             self._error(401, "Gemini API key required")
             return

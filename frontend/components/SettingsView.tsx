@@ -77,7 +77,11 @@ export function SettingsView({
                     <TextField
                         type={showKey ? "text" : "password"}
                         value={apiKey}
-                        onChange={(e) => onApiKeyChange(e.target.value)}
+                        onChange={(e) =>
+                            onApiKeyChange(
+                                e.target.value.trim().replace(/^['"]+|['"]+$/g, "").trim(),
+                            )
+                        }
                         placeholder="AIza..."
                         fullWidth
                         size="small"

@@ -115,10 +115,17 @@ app.add_middleware(
 # ---------------------------------------------------------------------------
 
 def _require_api_key(api_key: Optional[str]) -> str:
-    """Validate the X-Gemini-API-Key header is present and non-empty."""
-    if not api_key or not api_key.strip():
+    """Validate the X-Gemini-API-Key header is present and non-empty.
+
+    Strips whitespace AND any surrounding single/double quotes — a common copy-paste
+    artifact that otherwise causes Google to reject the key as invalid.
+    """
+    if not api_key:
         raise HTTPException(status_code=401, detail="Gemini API key required")
-    return api_key.strip()
+    cleaned = api_key.strip().strip('"').strip("'").strip()
+    if not cleaned:
+        raise HTTPException(status_code=401, detail="Gemini API key required")
+    return cleaned
 
 
 def _sanitize_error(msg: str, api_key: str) -> str:

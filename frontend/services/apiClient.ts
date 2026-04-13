@@ -16,7 +16,11 @@ export class ApiError extends Error {
 /** Read the user's Gemini API key from localStorage. Empty string if not set. */
 function getGeminiKey(): string {
     try {
-        return window.localStorage.getItem(GEMINI_KEY_STORAGE) || "";
+        // Strip whitespace AND any surrounding single/double quotes — common copy-paste artifact.
+        return (window.localStorage.getItem(GEMINI_KEY_STORAGE) || "")
+            .trim()
+            .replace(/^['"]+|['"]+$/g, "")
+            .trim();
     } catch {
         return "";
     }
